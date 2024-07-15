@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class Hangman extends JFrame {
     //counts the number of incorrect guesses made by the player
@@ -9,10 +10,10 @@ public class Hangman extends JFrame {
 
     private final WordDB wordDB;
 
-    private JLabel hangmanImage;
+    private JLabel hangmanImage, categorylabel;
 
     public Hangman(){
-        super("Hangman Game (Java Ed.");
+        super("Hangman Game (Java Ed.)");
         setSize(CommonConstants.FRAME_SIZE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -31,6 +32,21 @@ public class Hangman extends JFrame {
         hangmanImage = CustomTools.loadImage(CommonConstants.IMAGE_PATH);
         hangmanImage.setBounds(0, 0, hangmanImage.getPreferredSize().width, hangmanImage.getPreferredSize().height);
 
+        //category display
+        categorylabel = new JLabel(wordChallenge[0]);
+        categorylabel.setHorizontalAlignment(SwingConstants.CENTER);
+        categorylabel.setOpaque(true);
+        categorylabel.setForeground(Color.white);
+        categorylabel.setBackground(CommonConstants.SECONDARY_COLOR);
+        categorylabel.setBorder(BorderFactory.createLineBorder(CommonConstants.SECONDARY_COLOR));
+        categorylabel.setBounds(
+                0,
+                hangmanImage.getPreferredSize().height - 20,
+                hangmanImage.getPreferredSize().width,
+                categorylabel.getPreferredSize().height
+        );
+
+        getContentPane().add(categorylabel);
         getContentPane().add(hangmanImage);
     }
 }

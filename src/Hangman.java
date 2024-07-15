@@ -10,7 +10,7 @@ public class Hangman extends JFrame {
 
     private final WordDB wordDB;
 
-    private JLabel hangmanImage, categorylabel;
+    private JLabel hangmanImage, categorylabel, hiddenWordLabel;
 
     public Hangman(){
         super("Hangman Game (Java Ed.)");
@@ -19,6 +19,7 @@ public class Hangman extends JFrame {
         setLocationRelativeTo(null);
         setLayout(null);
         setResizable(false);
+        getContentPane().setBackground(CommonConstants.BACKGROUND_COLOR);
 
         //initiating vars
         wordDB = new WordDB();
@@ -36,7 +37,7 @@ public class Hangman extends JFrame {
         categorylabel = new JLabel(wordChallenge[0]);
         categorylabel.setHorizontalAlignment(SwingConstants.CENTER);
         categorylabel.setOpaque(true);
-        categorylabel.setForeground(Color.white);
+        categorylabel.setForeground(Color.WHITE);
         categorylabel.setBackground(CommonConstants.SECONDARY_COLOR);
         categorylabel.setBorder(BorderFactory.createLineBorder(CommonConstants.SECONDARY_COLOR));
         categorylabel.setBounds(
@@ -46,6 +47,17 @@ public class Hangman extends JFrame {
                 categorylabel.getPreferredSize().height
         );
 
+        //hidden word
+        hiddenWordLabel = new JLabel(CustomTools.hiddenWords(wordChallenge[1]));
+        hiddenWordLabel.setForeground(Color.WHITE);
+        hiddenWordLabel.setBounds(
+                0,
+                categorylabel.getY() + categorylabel.getPreferredSize().height + 50,
+                CommonConstants.FRAME_SIZE.width,
+                hiddenWordLabel.getPreferredSize().height
+        );
+
+        getContentPane().add(hiddenWordLabel);
         getContentPane().add(categorylabel);
         getContentPane().add(hangmanImage);
     }

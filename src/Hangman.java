@@ -14,7 +14,7 @@ public class Hangman extends JFrame implements ActionListener {
 
     private JLabel hangmanImage, categorylabel, hiddenWordLabel;
 
-    private JButton[] letterButton;
+    private JButton[] letterButtons;
 
     public Hangman(){
         super("Hangman Game (Java Ed.)");
@@ -27,7 +27,7 @@ public class Hangman extends JFrame implements ActionListener {
 
         //initiating vars
         wordDB = new WordDB();
-        letterButton = new JButton[26];
+        letterButtons = new JButton[26];
         wordChallenge = wordDB.loadChallenge();
 
         addGUIComponents();
@@ -83,8 +83,8 @@ public class Hangman extends JFrame implements ActionListener {
             //using ASCII values to calculate current index
             int currentIndex = c - 'A';
 
-            letterButton[currentIndex] = button;
-            buttonPanel.add(letterButton[currentIndex]);
+            letterButtons[currentIndex] = button;
+            buttonPanel.add(letterButtons[currentIndex]);
         }
 
         //reset button
@@ -109,6 +109,34 @@ public class Hangman extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        if(command.equals("Reset")){
+            resetGame();
+        }else if(command.equals("Quit")){
+            dispose();
+            return;
+        }
+    }
 
+    private void resetGame(){
+        //load new challenge
+        wordChallenge = wordDB.loadChallenge();
+        incorrectGuesses = 0;
+
+        //load starting image
+        CustomTools.updateImage(hangmanImage, CommonConstants.IMAGE_PATH);
+
+        //update category
+        categorylabel.setText(wordChallenge[0]);
+
+        //update hidden word
+        String hiddenWord = CustomTools.hiddenWords(wordChallenge[1]);
+        hiddenWordLabel.setText(hiddenWord);
+
+        //enable all buttons again
+        for(int i = 0; i < letterButtons.length; i++){
+            letterButtons[i].setEnabled(true);
+            letterButtons[i].setBackground(CommonConstants.PRIMARY_COLOR);
+        }
     }
 }

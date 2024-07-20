@@ -115,6 +115,45 @@ public class Hangman extends JFrame implements ActionListener {
         }else if(command.equals("Quit")){
             dispose();
             return;
+        }else{
+            //letter buttons
+
+            //disable button
+            JButton button = (JButton)e.getSource();
+            button.setEnabled(false);
+
+            //check if the word contains the user's guess
+            if(wordChallenge[1].contains(command)){
+                //indicate that the user chose the correct letter
+                button.setBackground(Color.GREEN);
+
+                //store the hidden word in a char array, as to update the hidden text
+                char[] hiddenWord = hiddenWordLabel.getText().toCharArray();
+
+                for(int i = 0;i < wordChallenge[1].length(); i++){
+                    //update _ to correct letter
+                    if(wordChallenge[1].charAt(i) == command.charAt(i)){
+                        hiddenWord[i] = command.charAt(0);
+                    }
+                }
+
+                //update hiddenWordLabel
+                hiddenWordLabel.setText(String.valueOf(hiddenWord));
+
+                //the user guessed the word
+            }else{
+                //indicate that the user chose the wrong letter
+                button.setBackground(Color.RED);
+
+                //increase incorrect counter
+                ++incorrectGuesses;
+
+                //update hangman image
+                CustomTools.updateImage(hangmanImage, "resources/" + (incorrectGuesses + 1) + ".png");
+
+                //user failed to guess the word
+
+            }
         }
     }
 

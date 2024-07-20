@@ -87,6 +87,20 @@ public class Hangman extends JFrame implements ActionListener {
             buttonPanel.add(letterButton[currentIndex]);
         }
 
+        //reset button
+        JButton resetButton = new JButton("Reset");
+        resetButton.setForeground(Color.WHITE);
+        resetButton.setBackground(CommonConstants.SECONDARY_COLOR);
+        resetButton.addActionListener(this);
+        buttonPanel.add(resetButton);
+
+        //quit button
+        JButton quitButton = new JButton("Quit");
+        quitButton.setForeground(Color.WHITE);
+        quitButton.setBackground(CommonConstants.SECONDARY_COLOR);
+        quitButton.addActionListener(this);
+        buttonPanel.add(quitButton);
+
         getContentPane().add(hiddenWordLabel);
         getContentPane().add(categorylabel);
         getContentPane().add(hangmanImage);

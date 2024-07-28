@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,7 +31,28 @@ public class CustomTools {
         }
     }
 
-    public static String hiddenWords(String word){
+    public static Font createFont(String resource){
+        //get font file path
+        String filePath = CustomTools.class.getResource(resource).getPath();
+
+        //check for empty spaces in path (bug)
+        if(filePath.contains("%20")){
+            filePath = filePath.replace("%20", " ");
+        }
+
+        //create font
+        try{
+            File customFontFile = new File(filePath);
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, customFontFile);
+            return customFont;
+        }catch(Exception e){
+            System.out.println("Error: " + e);
+        }
+
+        return null;
+    }
+
+    public static String hideWords(String word){
         String hiddenWord = "";
         for(int i = 0; i < word.length(); i++){
             if(!(word.charAt(i) == ' ')){

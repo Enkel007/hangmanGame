@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Hangman extends JFrame implements ActionListener {
     //counts the number of incorrect guesses made by the player
@@ -12,9 +14,11 @@ public class Hangman extends JFrame implements ActionListener {
 
     private final WordDB wordDB;
 
-    private JLabel hangmanImage, categorylabel, hiddenWordLabel;
+    private JLabel hangmanImage, categoryLabel, hiddenWordLabel, resultLabel, wordLabel;
 
     private JButton[] letterButtons;
+
+    private JDialog resultDialog;
 
     public Hangman(){
         super("Hangman Game (Java Ed.)");
@@ -29,6 +33,7 @@ public class Hangman extends JFrame implements ActionListener {
         wordDB = new WordDB();
         letterButtons = new JButton[26];
         wordChallenge = wordDB.loadChallenge();
+        createResultDialog();
 
         addGUIComponents();
     }
@@ -39,17 +44,17 @@ public class Hangman extends JFrame implements ActionListener {
         hangmanImage.setBounds(0, 0, hangmanImage.getPreferredSize().width, hangmanImage.getPreferredSize().height);
 
         //category display
-        categorylabel = new JLabel(wordChallenge[0]);
-        categorylabel.setHorizontalAlignment(SwingConstants.CENTER);
-        categorylabel.setOpaque(true);
-        categorylabel.setForeground(Color.WHITE);
-        categorylabel.setBackground(CommonConstants.SECONDARY_COLOR);
-        categorylabel.setBorder(BorderFactory.createLineBorder(CommonConstants.SECONDARY_COLOR));
-        categorylabel.setBounds(
+        categoryLabel = new JLabel(wordChallenge[0]);
+        categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        categoryLabel.setOpaque(true);
+        categoryLabel.setForeground(Color.WHITE);
+        categoryLabel.setBackground(CommonConstants.SECONDARY_COLOR);
+        categoryLabel.setBorder(BorderFactory.createLineBorder(CommonConstants.SECONDARY_COLOR));
+        categoryLabel.setBounds(
                 0,
                 hangmanImage.getPreferredSize().height - 20,
                 hangmanImage.getPreferredSize().width,
-                categorylabel.getPreferredSize().height
+                categoryLabel.getPreferredSize().height
         );
 
         //hidden word
@@ -58,7 +63,7 @@ public class Hangman extends JFrame implements ActionListener {
         hiddenWordLabel.setHorizontalAlignment(SwingConstants.CENTER);
         hiddenWordLabel.setBounds(
                 0,
-                categorylabel.getY() + categorylabel.getPreferredSize().height + 50,
+                categoryLabel.getY() + categoryLabel.getPreferredSize().height + 50,
                 CommonConstants.FRAME_SIZE.width,
                 hiddenWordLabel.getPreferredSize().height
         );
@@ -102,7 +107,7 @@ public class Hangman extends JFrame implements ActionListener {
         buttonPanel.add(quitButton);
 
         getContentPane().add(hiddenWordLabel);
-        getContentPane().add(categorylabel);
+        getContentPane().add(categoryLabel);
         getContentPane().add(hangmanImage);
         getContentPane().add(buttonPanel);
     }
@@ -110,8 +115,13 @@ public class Hangman extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        if(command.equals("Reset")){
+        if(command.equals("Reset") || command.equals("Restart")){
             resetGame();
+
+            if(command.equals("Restart")){
+                resultDialog.setVisible(false);
+            }
+
         }else if(command.equals("Quit")){
             dispose();
             return;
@@ -141,6 +151,12 @@ public class Hangman extends JFrame implements ActionListener {
                 hiddenWordLabel.setText(String.valueOf(hiddenWord));
 
                 //the user guessed the word
+                if(!hiddenWordLabel.getText().contains("*")){
+                    //display dialog with success result
+                    resultLabel.setText("You got it right!");
+                    resultDialog.setVisible(true);
+                }
+
             }else{
                 //indicate that the user chose the wrong letter
                 button.setBackground(Color.RED);
@@ -152,9 +168,48 @@ public class Hangman extends JFrame implements ActionListener {
                 CustomTools.updateImage(hangmanImage, "resources/" + (incorrectGuesses + 1) + ".png");
 
                 //user failed to guess the word
-
+                if(incorrectGuesses >= 6){
+                    //display "Game Over" result dialog
+                    resultLabel.setText("Game Over. Try Again?");
+                    resultDialog.setVisible(true);
+                }
             }
+            wordLabel.setText("Word: " + wordChallenge[1]);
         }
+    }
+
+    private void createResultDialog(){
+        resultDialog = new JDialog();
+        resultDialog.setTitle("Result");
+        resultDialog.setSize(CommonConstants.RESULT_DIALOG_SIZE);
+        resultDialog.getContentPane().setBackground(CommonConstants.BACKGROUND_COLOR);
+        resultDialog.setResizable(false);
+        resultDialog.setLocationRelativeTo(this);
+        resultDialog.setModal(true);
+        resultDialog.setLayout(new GridLayout(3, 1));
+        resultDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                resetGame();
+            }
+        });
+
+        resultLabel = new JLabel();
+        resultLabel.setForeground(Color.WHITE);
+        resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        wordLabel = new JLabel();
+        wordLabel.setForeground(Color.WHITE);
+        wordLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setForeground(Color.WHITE);
+        restartButton.setBackground(CommonConstants.SECONDARY_COLOR);
+        restartButton.addActionListener(this);
+
+        resultDialog.add(resultLabel);
+        resultDialog.add(wordLabel);
+        resultDialog.add(restartButton);
     }
 
     private void resetGame(){
@@ -166,7 +221,7 @@ public class Hangman extends JFrame implements ActionListener {
         CustomTools.updateImage(hangmanImage, CommonConstants.IMAGE_PATH);
 
         //update category
-        categorylabel.setText(wordChallenge[0]);
+        categoryLabel.setText(wordChallenge[0]);
 
         //update hidden word
         String hiddenWord = CustomTools.hiddenWords(wordChallenge[1]);
